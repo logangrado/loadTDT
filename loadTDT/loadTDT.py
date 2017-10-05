@@ -58,19 +58,6 @@ class TDT(object):
         #Extract data from .TEV file
         self.read_TEV()
 
-        '''
-        print('Plotting')
-        import matplotlib as mpl
-        import matplotlib.pyplot as plt
-
-        import ipdb; ipdb.set_trace()
-        fig,ax = plt.subplots()
-        ax.plot(self.data['streams']['vOut']['data'][0,:10000])
-        plt.tight_layout()
-        plt.show()
-        '''
-
-        print('done')
         return self.data
         
     def read_tnt(self):
@@ -245,13 +232,10 @@ class TDT(object):
         }
 
         for storeName, store in self.headerStruct['stores'].items():
-            print('Processing {}'.format(storeName))
             size = store['size']
             storeType = store['typeStr']
             dtype = self.dtypes[store['dtype']]
             #fs = store['fs']
-
-            
             
             if store['typeStr'] == 'streams':
                 self.data['streams'][storeName] = {
