@@ -6,9 +6,12 @@ class TDT(object):
     '''
     Class for processing TDT files
     '''
-    def __init__(self, tank):
+    def __init__(self, block, stores):
         self.set_globals() #Set global variables
 
+        self.block = block
+        self.stores = stores
+        
         #Define dictionaries
         self.headerStruct = {
             'startTime' : None,
@@ -19,20 +22,19 @@ class TDT(object):
         self.data = {}
 
         self.epocs = {
-            'name'    : [],
-            'buddies' : [],
-            'timestamps'      : [],
-            'code'    : [],
-            'type'    : [],
-            'typeStr' : [],
-            'data'    : [],
-            'dtype'   : [],
+            'name'       : [],
+            'buddies'    : [],
+            'timestamps' : [],
+            'code'       : [],
+            'type'       : [],
+            'typeStr'    : [],
+            'data'       : [],
+            'dtype'      : [],
         }
         
         #get file objects
-        self.tank = tank
-        fnames = os.listdir(self.tank)
-        basePath = os.path.join(self.tank, [fname for fname in fnames if '.tsq' in fname][0][:-4])
+        fnames = os.listdir(self.block)
+        basePath = os.path.join(self.block, [fname for fname in fnames if '.tsq' in fname][0][:-4])
         
         self.tsq = open(basePath+'.tsq','rb')
         self.tev = open(basePath+'.tev','rb')
@@ -232,46 +234,47 @@ class TDT(object):
         }
 
         for storeName, store in self.headerStruct['stores'].items():
-            size = store['size']
-            storeType = store['typeStr']
-            dtype = self.dtypes[store['dtype']]
-            #fs = store['fs']
-            
-            if store['typeStr'] == 'streams':
-                self.data['streams'][storeName] = {
-                    'fs' : store['fs']
-                }
-                
-                nChan = np.max(store['channel'])
-                chanOffsets = np.zeros(nChan,dtype=int)
+            if self.stores is None or storeName in self.stores:
+                size = store['size']
+                storeType = store['typeStr']
+                dtype = self.dtypes[store['dtype']]
+                #fs = store['fs']
 
-                nPts = int((size-10) * 4 / np.array(1,dtype=dtype).nbytes) #number of points per block
-                nStores = store['offsets'].size  
-                self.data['streams'][storeName]['data'] = np.zeros((nChan, int(nPts*nStores/nChan)),dtype=dtype)
+                if store['typeStr'] == 'streams':
+                    self.data['streams'][storeName] = {
+                        'fs' : store['fs']
+                    }
 
-                for i in range(len(store['offsets'])):
-                    self.tev.seek(store['offsets'][i],0)
-                    chan = store['channel'][i] - 1
-                    x = np.fromfile(self.tev, dtype=dtype, count=nPts)
+                    nChan = np.max(store['channel'])
+                    chanOffsets = np.zeros(nChan,dtype=int)
 
-                    self.data['streams'][storeName]['data'][chan, chanOffsets[chan]:chanOffsets[chan]+nPts] = x
-                    chanOffsets[chan] += nPts
+                    nPts = int((size-10) * 4 / np.array(1,dtype=dtype).nbytes) #number of points per block
+                    nStores = store['offsets'].size  
+                    self.data['streams'][storeName]['data'] = np.zeros((nChan, int(nPts*nStores/nChan)),dtype=dtype)
 
-            elif store['typeStr'] == 'epocs':
-                pass
+                    for i in range(len(store['offsets'])):
+                        self.tev.seek(store['offsets'][i],0)
+                        chan = store['channel'][i] - 1
+                        x = np.fromfile(self.tev, dtype=dtype, count=nPts)
 
-            elif store['typeStr'] == 'scalars':
-                pass
+                        self.data['streams'][storeName]['data'][chan, chanOffsets[chan]:chanOffsets[chan]+nPts] = x
+                        chanOffsets[chan] += nPts
 
-            elif store['typeStr'] == 'snpis':
-                pass
+                elif store['typeStr'] == 'epocs':
+                    pass
 
-            else:
-                pass
+                elif store['typeStr'] == 'scalars':
+                    pass
+
+                elif store['typeStr'] == 'snpis':
+                    pass
+
+                else:
+                    pass
             
     def get_data_info(self):
         self.data['info'] = {
-            'tankpath'      : None,
+            'blockpath'     : None,
             'blockname'     : None,
             'date'          : None,
             'utcStartTime'  : None,
@@ -343,14 +346,18 @@ class TDT(object):
         pass
 
 
-def loadTDT(tank):
+def loadTDT(block, stores=None):
     '''
-    Load TDT tank.
+    Load TDT block.
 
     Parameters
     ----------
-    | tank : str
-    |     Path to TDT tank
+    | Required
+    |     block : str
+    |         Path to TDT block
+    | Optional
+    |     stores : str or list, defaults to None
+    |         String or list of strings specifing which store(s) to extract
 
     Returns
     -------
@@ -359,6 +366,6 @@ def loadTDT(tank):
     |     'streams', 'snips'), each of which contains keys for specific data
     |     stores.
     '''
-    obj = TDT(tank)
+    obj = TDT(block, stores)
     data = obj.extract()
     return data
