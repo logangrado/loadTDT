@@ -269,7 +269,6 @@ class TDT(object):
             else:
                 pass
             
-            
     def get_data_info(self):
         self.data['info'] = {
             'tankpath'      : None,
