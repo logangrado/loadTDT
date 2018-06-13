@@ -2,9 +2,9 @@ import numpy as np
 import os
 import struct
 
-class TDT(object):
+class _TDT(object):
     '''
-    Class for processing TDT files
+    Internal class for processing TDT files
     '''
     def __init__(self, block, stores):
         self.set_globals() #Set global variables
@@ -352,20 +352,20 @@ def loadTDT(block, stores=None):
 
     Parameters
     ----------
-    | Required
-    |     block : str
-    |         Path to TDT block
-    | Optional
-    |     stores : str or list, defaults to None
-    |         String or list of strings specifing which store(s) to extract
+    Required
+        block : str
+            Path to TDT block
+    Optional
+        stores : str or list, defaults to None
+            String or list of strings specifing which store(s) to extract
 
     Returns
     -------
-    | data : dict
-    |     Dictionary with different types of data as keys ('epocs', 'scalars',
-    |     'streams', 'snips'), each of which contains keys for specific data
-    |     stores.
+    data : dict
+        Dictionary with different types of data as keys ('epocs', 'scalars',
+        'streams', 'snips'), each of which contains keys for specific data
+        stores.
     '''
-    obj = TDT(block, stores)
+    obj = _TDT(block, stores)
     data = obj.extract()
     return data
