@@ -352,12 +352,10 @@ def loadTDT(block, stores=None):
 
     Parameters
     ----------
-    Required
-        block : str
-            Path to TDT block
-    Optional
-        stores : str or list, defaults to None
-            String or list of strings specifing which store(s) to extract
+    block : str
+        Path to TDT block
+    stores : str or list, optional
+        String or list of strings specifing which store(s) to extract
 
     Returns
     -------
