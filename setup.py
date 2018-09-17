@@ -20,5 +20,6 @@ setup(name         = 'loadTDT',
       packages     = ['loadTDT'],
       zip_safe     = False,
       install_requires = [
-          'numpy'
+          'numpy',
+          'h5py'
       ])
