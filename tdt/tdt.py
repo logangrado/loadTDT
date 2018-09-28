@@ -2,7 +2,7 @@ import numpy as np
 import os
 import struct
 
-class TDT_block(object):
+class Block(object):
     '''
     Read TDT block.
 
