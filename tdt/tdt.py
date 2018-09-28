@@ -2,15 +2,24 @@ import numpy as np
 import os
 import struct
 
-class _TDT(object):
+class TDT_block(object):
     '''
-    Internal class for processing TDT files
-    '''
-    def __init__(self, block, stores):
-        self.set_globals() #Set global variables
+    Read TDT block.
 
-        self.block = block
-        self.stores = stores
+    Parameters
+    ----------
+    path : str
+        Path to TDT block
+ 
+    Returns
+    -------
+    block : TDT_block object
+        Object for interfacing with a TDT block
+    '''
+    def __init__(self, path):
+        self._set_globals() #Set global variables
+
+        self.path = path
         
         #Define dictionaries
         self.headerStruct = {
@@ -18,8 +27,13 @@ class _TDT(object):
             'stopTime' : None,
             'stores' : {},
         }
-        
-        self.data = {}
+
+        self._data = {
+            'epocs'   : {},
+            'snips'   : {},
+            'streams' : {},
+            'scalars' : {},
+        }
 
         self.epocs = {
             'name'       : [],
@@ -33,54 +47,71 @@ class _TDT(object):
         }
         
         #get file objects
-        fnames = os.listdir(self.block)
-        basePath = os.path.join(self.block, [fname for fname in fnames if '.tsq' in fname][0][:-4])
+        fnames = os.listdir(self.path)
+        basePath = os.path.join(self.path, [fname for fname in fnames if '.tsq' in fname][0][:-4])
         
-        self.tsq = open(basePath+'.tsq','rb')
-        self.tev = open(basePath+'.tev','rb')
-        self.tnt = open(basePath+'.tnt','rt') #read text
+        self._tsq = open(basePath+'.tsq','rb')
+        self._tev = open(basePath+'.tev','rb')
+        self._tnt = open(basePath+'.tnt','rt') #read text
 
-        self.Tbk = open(basePath+'.Tbk','rb')
-        self.Tdx = open(basePath+'.Tdx','rb')
-        self.tin = open(basePath+'.tin','rb')
-        
-    def extract(self):
+        self._Tbk = open(basePath+'.Tbk','rb')
+        self._Tdx = open(basePath+'.Tdx','rb')
+        self._tin = open(basePath+'.tin','rb')
+
         #Read notes
-        self.read_tnt()
+        self._read_tnt()
 
         #Look for sort IDs
-        self.get_sortIDs()
+        self._get_sortIDs()
 
         #Read block notes
-        self.read_blockNotes()
+        self._read_blockNotes()
         
         #Read headers
-        self.read_headers()
+        self._read_headers()
 
-        #Extract data from .TEV file
-        self.read_TEV()
+    def read_stores(self, stores=None):
+        '''
+        Read specified stores. If no stores are specified, all stores are read
 
-        return self.data
+        Parameters
+        ----------
+        stores : str, list
+            Name or names of stores to be read. If None, all stores are read.
+        '''
         
-    def read_tnt(self):
+        #Extract data from .TEV file
+        self._read_TEV(stores)
+
+    @property
+    def stores(self):
+        return [*self.headerStruct['stores'].keys()]
+
+    @property
+    def data(self):
+        return self._data
+    
+    # Internal methods
+    #---------------------------------------
+    def _read_tnt(self):
         '''
         The tnt file appears to be a note file. Skipping for now
         '''
         pass
 
-    def get_sortIDs(self):
+    def _get_sortIDs(self):
         '''
         Looks like it loads sort IDs from a sort/ directory. Skipping for now
         '''
         pass
 
-    def read_blockNotes(self):
+    def _read_blockNotes(self):
         '''
         Reads blocknotes from .Tbk file into a list of dictionaries
         '''
         self.blockNotes = []
 
-        strbits = np.fromfile(self.Tbk, dtype='uint8')
+        strbits = np.fromfile(self._Tbk, dtype='uint8')
         string = ''.join([chr(item) for item in strbits])
         string = string.split('[USERNOTEDELIMITER]')[2]
         lines = string.split()
@@ -98,8 +129,8 @@ class _TDT(object):
                 value = items[2].split('=')[1]
 
             self.blockNotes[storenum][fieldstr] = value
-            
-    def read_headers(self):
+
+    def _read_headers(self):
         header_dtype = np.dtype([
             ('size',         np.int32),
             ('type',         np.int32),
@@ -117,13 +148,13 @@ class _TDT(object):
         # this may cause issues later, but i keep getting errors if I try to read the data as regular strings
         
         #Read all headers
-        self.tsq.seek(0,0)
-        headers = np.fromfile(self.tsq, dtype=header_dtype)
+        self._tsq.seek(0,0)
+        headers = np.fromfile(self._tsq, dtype=header_dtype)
         
         #Process start/stop time
-        if headers[1]['code'] != self.event_marks['STARTBLOCK']:
+        if headers[1]['code'] != self._event_marks['STARTBLOCK']:
             print('Block start marker not found')
-        if headers[-1]['code'] != self.event_marks['STOPBLOCK']:
+        if headers[-1]['code'] != self._event_marks['STOPBLOCK']:
             print('Block end marker not found')
         self.headerStruct['startTime'] = headers[1]['timestamp']
         self.headerStruct['stopTime'] = headers[1]['timestamp']
@@ -134,7 +165,7 @@ class _TDT(object):
         #Get unique codes, and determine their store types
         unique_codes = np.unique(headers['code'])
         unique_code_indxs = [np.where(headers['code'] == code)[0][0] for code in unique_codes]
-        store_types = [self.code2type(headers[indx]['type']) for indx in unique_code_indxs] 
+        store_types = [self._code2type(headers[indx]['type']) for indx in unique_code_indxs] 
 
         #Add store information to store map
         for i in range(len(unique_codes)):
@@ -157,7 +188,7 @@ class _TDT(object):
                 self.epocs['buddies'].append(buddies)
                 #self.epocs['code'].append() Dont need because we are reading names directly
                 self.epocs['timestamps'].append([])
-                self.epocs['type'].append(self.epoc2type(header['type']))
+                self.epocs['type'].append(self._epoc2type(header['type']))
                 self.epocs['typeStr'].append(sType)
                 #self.epocs['typeNum'].append() Also dont care about this
                 self.epocs['data'].append([])
@@ -225,23 +256,17 @@ class _TDT(object):
                 if self.headerStruct['stores'][name]['offset'][-1] < self.headerStruct['stores'][name]['onset'][-1]:
                     self.headerStruct['stores'][name]['offset'] = np.hstack((self.headerStruct['stores'][name]['offset'],np.inf))
 
-    def read_TEV(self):
-        self.data = {
-            'epocs'   : {},
-            'snips'   : {},
-            'streams' : {},
-            'scalars' : {},
-        }
-
+    def _read_TEV(self, stores=None):
+        
         for storeName, store in self.headerStruct['stores'].items():
-            if self.stores is None or storeName in self.stores:
+            if stores is None or storeName in stores:
                 size = store['size']
                 storeType = store['typeStr']
-                dtype = self.dtypes[store['dtype']]
+                dtype = self._dtypes[store['dtype']]
                 #fs = store['fs']
 
                 if store['typeStr'] == 'streams':
-                    self.data['streams'][storeName] = {
+                    self._data['streams'][storeName] = {
                         'fs' : store['fs']
                     }
 
@@ -250,14 +275,14 @@ class _TDT(object):
 
                     nPts = int((size-10) * 4 / np.array(1,dtype=dtype).nbytes) #number of points per block
                     nStores = store['offsets'].size  
-                    self.data['streams'][storeName]['data'] = np.zeros((nChan, int(nPts*nStores/nChan)),dtype=dtype)
+                    self._data['streams'][storeName]['data'] = np.zeros((nChan, int(nPts*nStores/nChan)),dtype=dtype)
 
                     for i in range(len(store['offsets'])):
-                        self.tev.seek(store['offsets'][i],0)
+                        self._tev.seek(store['offsets'][i],0)
                         chan = store['channel'][i] - 1
-                        x = np.fromfile(self.tev, dtype=dtype, count=nPts)
+                        x = np.fromfile(self._tev, dtype=dtype, count=nPts)
 
-                        self.data['streams'][storeName]['data'][chan, chanOffsets[chan]:chanOffsets[chan]+nPts] = x
+                        self._data['streams'][storeName]['data'][chan, chanOffsets[chan]:chanOffsets[chan]+nPts] = x
                         chanOffsets[chan] += nPts
 
                 elif store['typeStr'] == 'epocs':
@@ -272,8 +297,8 @@ class _TDT(object):
                 else:
                     pass
             
-    def get_data_info(self):
-        self.data['info'] = {
+    def _get_data_info(self):
+        self._data['info'] = {
             'blockpath'     : None,
             'blockname'     : None,
             'date'          : None,
@@ -284,35 +309,35 @@ class _TDT(object):
             'snipChannel'   : None,
         }
 
-    def code2type(self,code):
+    def _code2type(self,code):
         '''
         Given a code, returns string
         '''
-        if code == self.event_types['STREAM']:
+        if code == self._event_types['STREAM']:
             code_str = 'streams'
-        elif code == self.event_types['SNIP']:
+        elif code == self._event_types['SNIP']:
             code_str = 'snips'
-        elif code == self.event_types['SCALAR']:
+        elif code == self._event_types['SCALAR']:
             code_str = 'scalars'
-        elif code in [self.event_types['STRON'], self.event_types['STROFF'], self.event_types['MARK']]:
+        elif code in [self._event_types['STRON'], self._event_types['STROFF'], self._event_types['MARK']]:
             code_str = 'epocs'
         else:
             code_str = 'unknown'
         
         return code_str
 
-    def epoc2type(self,code):
-        if code in [self.event_types['STRON'], self.event_types['MARK']]:
+    def _epoc2type(self,code):
+        if code in [self._event_types['STRON'], self._event_types['MARK']]:
             code_str = 'onset'
-        elif code == self.event_types['STROFF']:
+        elif code == self._event_types['STROFF']:
             code_str = 'offset'
         else:
             code_str = 'unknown'
 
         return code_str
         
-    def set_globals(self):
-        self.event_types = {
+    def _set_globals(self):
+        self._event_types = {
             'UNKNOWN'      : int('0x00000000',16),
             'STRON'        : int('0x00000101',16),
             'STROFF'       : int('0x00000102',16),
@@ -326,11 +351,11 @@ class _TDT(object):
             'MASK'         : int('0x0000FF0F',16),
             'INVALID_MASK' : int('0xFFFF0000',16),
         }
-        self.event_marks = {
+        self._event_marks = {
             'STARTBLOCK' : b'\x01', #int('0x0001',16),
             'STOPBLOCK'  : b'\x02', #int('0x0002',16),
         }
-        self.data_formats = {
+        self._data_formats = {
             'FLOAT'      : 0,
             'LONG'       : 1,
             'SHORT'      : 2,
@@ -340,30 +365,9 @@ class _TDT(object):
             'TYPE_COUNT' : 6
         }
 
-        self.dtypes = ['float32','int32','int16','int8','float64','']
+        self._dtypes = ['float32','int32','int16','int8','float64','']
         
     def __del__(self):
         pass
 
-
-def loadTDT(block, stores=None):
-    '''
-    Load TDT block.
-
-    Parameters
-    ----------
-    block : str
-        Path to TDT block
-    stores : str or list, optional
-        String or list of strings specifing which store(s) to extract
-
-    Returns
-    -------
-    data : dict
-        Dictionary with different types of data as keys ('epocs', 'scalars',
-        'streams', 'snips'), each of which contains keys for specific data
-        stores.
-    '''
-    obj = _TDT(block, stores)
-    data = obj.extract()
-    return data
+    

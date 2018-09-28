@@ -1,4 +1,13 @@
-# loadTDT
-![v0.1.2](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.1.2&x2=0)
+# tdt
+![v0.2.0](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.2.0&x2=0)
 
-A function for reading TDT tanks into python.
+A tool for interfacing with and reading TDT blocks in python
+
+Usage
+
+```
+>>> import tdt
+
+>>> block = tdt.TDT_block('block_path')
+>>> block.read_streams()
+```
