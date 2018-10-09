@@ -109,7 +109,7 @@ class Block(object):
         '''
         Reads blocknotes from .Tbk file into a list of dictionaries
         '''
-        self.blockNotes = []
+        blockNotesList = []
 
         strbits = np.fromfile(self._Tbk, dtype='uint8')
         string = ''.join([chr(item) for item in strbits])
@@ -121,15 +121,18 @@ class Block(object):
             #check if new store
             if 'StoreName' in line:
                 storenum += 1
-                self.blockNotes.append({})
+                blockNotesList.append({})
 
             if ';' in line:
                 items = line.split(';')
                 fieldstr = items[0].split('=')[1]
                 value = items[2].split('=')[1]
 
-            self.blockNotes[storenum][fieldstr] = value
+            blockNotesList[storenum][fieldstr] = value
 
+        # Convert blocknots from list to dict
+        self.blockNotes = {store['StoreName']:store for store in blockNotesList}
+            
     def _read_headers(self):
         header_dtype = np.dtype([
             ('size',         np.int32),
