@@ -269,8 +269,9 @@ class Block(object):
                 #fs = store['fs']
 
                 if store['typeStr'] == 'streams':
-                    self._data['streams'][storeName] = {
-                        'fs' : store['fs']
+                    self._data[storeName] = {
+                        'type' : 'stream',
+                        'fs'   : store['fs']
                     }
 
                     nChan = np.max(store['channel'])
@@ -278,14 +279,14 @@ class Block(object):
 
                     nPts = int((size-10) * 4 / np.array(1,dtype=dtype).nbytes) #number of points per block
                     nStores = store['offsets'].size  
-                    self._data['streams'][storeName]['data'] = np.zeros((int(nPts*nStores/nChan)),dtype=dtype, nChan)
+                    self._data[storeName]['data'] = np.zeros((int(nPts*nStores/nChan)),dtype=dtype, nChan)
 
                     for i in range(len(store['offsets'])):
                         self._tev.seek(store['offsets'][i],0)
                         chan = store['channel'][i] - 1
                         x = np.fromfile(self._tev, dtype=dtype, count=nPts)
 
-                        self._data['streams'][storeName]['data'][chanOffsets[chan]:chanOffsets[chan]+nPts, chan] = x
+                        self._data[storeName]['data'][chanOffsets[chan]:chanOffsets[chan]+nPts, chan] = x
                         chanOffsets[chan] += nPts
 
                 elif store['typeStr'] == 'epocs':
