@@ -1,6 +1,8 @@
 import numpy as np
 import os
 import struct
+from tabulate import tabulate
+from textwrap import indent
 
 class Block(object):
     '''
@@ -20,6 +22,7 @@ class Block(object):
         self._set_globals() #Set global variables
 
         self.path = path
+        self.stream_info = {} 
         
         #Define dictionaries
         self.headerStruct = {
@@ -69,6 +72,8 @@ class Block(object):
         
         #Read headers
         self._read_headers()
+
+        self._create_stream_info()
 
     def read_stores(self, stores=None):
         '''
@@ -129,10 +134,10 @@ class Block(object):
                 value = items[2].split('=')[1]
 
             blockNotesList[storenum][fieldstr] = value
-
+        
         # Convert blocknots from list to dict
         self.blockNotes = {store['StoreName']:store for store in blockNotesList}
-            
+        
     def _read_headers(self):
         header_dtype = np.dtype([
             ('size',         np.int32),
@@ -259,6 +264,18 @@ class Block(object):
                 if self.headerStruct['stores'][name]['offset'][-1] < self.headerStruct['stores'][name]['onset'][-1]:
                     self.headerStruct['stores'][name]['offset'] = np.hstack((self.headerStruct['stores'][name]['offset'],np.inf))
 
+    def _create_stream_info(self):
+        '''
+        Collects important information about streams
+        '''
+        for name, info in self.headerStruct['stores'].items():
+            self.stream_info[name] = {
+                'type'  : info['typeStr'],
+                'fs'    : info['fs'] if 'fs' in info else None,
+                'nChan' : max(info['channel']) if 'channel' in info else None,
+                'dtype' : self._dtypes[info['dtype']],
+            }
+        
     def _read_TEV(self, stores=None):
         
         for storeName, store in self.headerStruct['stores'].items():
@@ -360,13 +377,13 @@ class Block(object):
             'STOPBLOCK'  : b'\x02', #int('0x0002',16),
         }
         self._data_formats = {
-            'FLOAT'      : 0,
-            'LONG'       : 1,
-            'SHORT'      : 2,
-            'BYTE'       : 3,
-            'DOUBLE'     : 4,
-            'QWORD'      : 5,
-            'TYPE_COUNT' : 6
+            'float'      : 0,
+            'long'       : 1,
+            'short'      : 2,
+            'byte'       : 3,
+            'double'     : 4,
+            'qword'      : 5,
+            'type_count' : 6
         }
 
         self._dtypes = ['float32','int32','int16','int8','float64','']
@@ -374,6 +391,24 @@ class Block(object):
     def __del__(self):
         pass
 
+    def __str__(self):
+
+        s = 'TDT block\n'\
+            '  Block name : {}\n'\
+            '  Store info :\n'.format(os.path.basename(self.path))
+        
+        stream_info_dict = {'Store' : []}
+
+        for key, value in self.stream_info.items():
+            stream_info_dict['Store'].append(key)
+            for k, v in value.items():
+                if k not in stream_info_dict:
+                    stream_info_dict[k] = []
+                stream_info_dict[k].append(v)
+
+        s += indent(tabulate(stream_info_dict, headers='keys', tablefmt='simple'), '    ')
+        
+        return s
     
 def is_block(path):
     '''

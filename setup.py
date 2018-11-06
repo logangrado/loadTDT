@@ -21,5 +21,6 @@ setup(name             = name,
       license          = '',
       url              = '',
       packages         = setuptools.find_packages(),
-      install_requires = ['numpy']
+      install_requires = ['numpy',
+                          'tabulate']
 )
