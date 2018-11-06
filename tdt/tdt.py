@@ -31,12 +31,7 @@ class Block(object):
             'stores' : {},
         }
 
-        self._data = {
-            'epocs'   : {},
-            'snips'   : {},
-            'streams' : {},
-            'scalars' : {},
-        }
+        self._data = {}
 
         self.epocs = {
             'name'       : [],
