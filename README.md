@@ -1,5 +1,5 @@
 # tdt
-![v0.2.1](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.2.1&x2=0)
+![v0.3.0](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.3.0&x2=0)
 
 A tool for interfacing with and reading TDT blocks in python
 

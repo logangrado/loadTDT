@@ -279,7 +279,7 @@ class Block(object):
 
                     nPts = int((size-10) * 4 / np.array(1,dtype=dtype).nbytes) #number of points per block
                     nStores = store['offsets'].size  
-                    self._data[storeName]['data'] = np.zeros((int(nPts*nStores/nChan)),dtype=dtype, nChan)
+                    self._data[storeName]['data'] = np.zeros((int(nPts*nStores/nChan), nChan),dtype=dtype)
 
                     for i in range(len(store['offsets'])):
                         self._tev.seek(store['offsets'][i],0)
@@ -375,3 +375,27 @@ class Block(object):
         pass
 
     
+def is_block(path):
+    '''
+    Checks if the given path is a tdt block.
+
+    Parameters
+    ----------
+    block : str
+        Block path
+
+    Returns
+    -------
+    is_block : bool
+        True if `path` is a tdt block, else False
+    '''
+
+    #Check that path exists...
+    if not os.path.isdir(path):
+        return False
+    
+    fnames = os.listdir(path)
+    if any('.tsq' in fname for fname in fnames):
+        return True
+
+    return False
