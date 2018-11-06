@@ -454,7 +454,7 @@ def is_tank(path):
         return False
     
     dirs = os.listdir(path)
-    if any(tdt.is_block(os.path.join(path, d)) for d in dirs):
+    if any(is_block(os.path.join(path, d)) for d in dirs):
         return True
 
     return False
