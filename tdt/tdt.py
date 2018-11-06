@@ -424,13 +424,37 @@ def is_block(path):
     is_block : bool
         True if `path` is a tdt block, else False
     '''
-
     #Check that path exists...
     if not os.path.isdir(path):
         return False
     
     fnames = os.listdir(path)
     if any('.tsq' in fname for fname in fnames):
+        return True
+
+    return False
+
+def is_tank(path):
+    '''
+    Check if the given path is a tdt tank. A tank is any directory with one
+    or more blocks.
+
+    Parameters
+    ----------
+    block : str
+        Block path
+
+    Returns
+    -------
+    is_block : bool
+        True if `path` is a tdt block, else False
+    '''
+    #Check that path exists...
+    if not os.path.isdir(path):
+        return False
+    
+    dirs = os.listdir(path)
+    if any(tdt.is_block(os.path.join(path, d)) for d in dirs):
         return True
 
     return False
