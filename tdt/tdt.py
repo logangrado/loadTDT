@@ -238,7 +238,7 @@ class Block(object):
                 name = self.epocs['name'][i]
                 self.headerStruct['stores'][name] = {
                     'name'    : name,
-                    'onset'   : self.epocs['timestamps'][i][:-1],
+                    'onset'   : self.epocs['timestamps'][i],
                     'offset'  : self.epocs['timestamps'][i][1:],
                     'type'    : self.epocs['type'][i],
                     'typeStr' : self.epocs['typeStr'][i],
@@ -302,8 +302,8 @@ class Block(object):
                         chanOffsets[chan] += nPts
 
                 elif store['typeStr'] == 'epocs':
-                    pass
-
+                    self._data[storeName] = store.copy()
+  
                 elif store['typeStr'] == 'scalars':
                     pass
 
