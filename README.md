@@ -1,13 +1,17 @@
-# tdt
-![v0.4.0](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.4.0&x2=0)
+# pytdt
+![v0.5.0](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.5.0&x2=0)
 
 A tool for interfacing with and reading TDT blocks in python
 
-Usage
+## Installation
+
+`pip install pytdt`
+
+## Usage
 
 ```
->>> import tdt
+>>> import pytdt
 
->>> block = tdt.TDT_block('block_path')
+>>> block = pytdt.Block('path/to/block')
 >>> block.read_streams()
 ```

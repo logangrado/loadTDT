@@ -16,11 +16,11 @@ if not version:
 setup(name             = name,
       version          = version,
       author           = 'Logan Grado',
-      author_email     = 'grado@umn.edu',
+      author_email     = 'grado.logan@gmail.com',
       description      = 'Tucker Davis Technologies tools',
       license          = '',
       url              = '',
-      packages         = setuptools.find_packages(),
+      packages         = find_packages(),
       install_requires = ['numpy',
                           'tabulate']
 )
