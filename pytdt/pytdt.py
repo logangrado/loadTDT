@@ -5,20 +5,21 @@ from tabulate import tabulate
 from textwrap import indent
 
 class Block(object):
-    '''
-    Read TDT block.
-
-    Parameters
-    ----------
-    path : str
-        Path to TDT block
- 
-    Returns
-    -------
-    block : TDT_block object
-        Object for interfacing with a TDT block
-    '''
     def __init__(self, path):
+        '''
+        Read TDT block.
+        
+        Parameters
+        ----------
+        path : str
+            Path to TDT block
+        
+        Returns
+        -------
+        block : TDT_block object
+            Object for interfacing with a TDT block
+        '''
+
         self._set_globals() #Set global variables
 
         self.path = path
