@@ -50,11 +50,13 @@ class Block(object):
         
         self._tsq = open(basePath+'.tsq','rb')
         self._tev = open(basePath+'.tev','rb')
-        self._tnt = open(basePath+'.tnt','rt') #read text
+        if os.path.exists(basePath+'.tnt'):
+            self._tnt = open(basePath+'.tnt', 'rt')  # read text
 
         self._Tbk = open(basePath+'.Tbk','rb')
         self._Tdx = open(basePath+'.Tdx','rb')
-        self._tin = open(basePath+'.tin','rb')
+        if os.path.exists(basePath+'.tin'):
+            self._tin = open(basePath+'.tin', 'rb')
 
         #Read notes
         self._read_tnt()
