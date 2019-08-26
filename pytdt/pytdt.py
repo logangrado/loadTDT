@@ -48,7 +48,7 @@ class Block(object):
         #get file objects
         fnames = os.listdir(self.path)
         basePath = os.path.join(self.path, [fname for fname in fnames if '.tsq' in fname][0][:-4])
-        
+
         self._tsq = open(basePath+'.tsq','rb')
         self._tev = open(basePath+'.tev','rb')
         self._tnt = open(basePath+'.tnt','rt') #read text
@@ -90,6 +90,23 @@ class Block(object):
 
     @property
     def data(self):
+        '''
+        Data dictionary containing read stores, where each key is the store name
+
+        Each store itself is a dictionary, with the following keys:
+
+        +-------+------------------------------------+
+        + Key   + Value                              +
+        +=======+====================================+
+        + type  + type of store (stream, epoch, etc) +
+        +-------+------------------------------------+
+        + data  + data for the store                 +
+        +-------+------------------------------------+
+        + fs    + sampling rate (stream only)        +
+        +-------+------------------------------------+
+        + nChan + number of channels (stream only)   +
+        +-------+------------------------------------+
+        '''
         return self._data
     
     # Internal methods
@@ -115,8 +132,10 @@ class Block(object):
         strbits = np.fromfile(self._Tbk, dtype='uint8')
         string = ''.join([chr(item) for item in strbits])
         string = string.split('[USERNOTEDELIMITER]')[2]
-        lines = string.split()
-
+        
+        lines = string.split('\n')
+        lines = lines[:-1]
+        
         storenum = -1
         for line in lines:
             #check if new store
@@ -125,6 +144,7 @@ class Block(object):
                 blockNotesList.append({})
 
             if ';' in line:
+                print(line)
                 items = line.split(';')
                 fieldstr = items[0].split('=')[1]
                 value = items[2].split('=')[1]

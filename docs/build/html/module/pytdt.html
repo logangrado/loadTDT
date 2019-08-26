@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; pytdt 0.5.0 documentation</title>
+  <title>API Reference &mdash; pytdt 0.5.1 documentation</title>
   
 
   
@@ -33,9 +33,10 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Welcome to PyTDT’s documentation!" href="../index.html" /> 
+    <link rel="prev" title="Installation" href="../installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -59,7 +60,7 @@
             
             
               <div class="version">
-                0.5.0
+                0.5.1
               </div>
             
           
@@ -85,6 +86,8 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About PyTDT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-pytdt.pytdt">pytdt</a></li>
 </ul>
@@ -176,7 +179,39 @@
 <dl class="method">
 <dt id="pytdt.pytdt.Block.data">
 <em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#pytdt.pytdt.Block.data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Data dictionary containing read stores, where each key is the store name</p>
+<p>Each store itself is a dictionary, with the following keys:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 84%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"><p>Key</p></th>
+<th class="head" rowspan="2"><p>Value</p></th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td rowspan="2"><p>type</p></td>
+<td rowspan="2"><p>type of store (stream, epoch, etc)</p></td>
+</tr>
+<tr class="row-even"></tr>
+<tr class="row-odd"><td rowspan="2"><p>data</p></td>
+<td rowspan="2"><p>data for the store</p></td>
+</tr>
+<tr class="row-even"></tr>
+<tr class="row-odd"><td rowspan="2"><p>fs</p></td>
+<td rowspan="2"><p>sampling rate (stream only)</p></td>
+</tr>
+<tr class="row-even"></tr>
+<tr class="row-odd"><td rowspan="2"><p>nChan</p></td>
+<td rowspan="2"><p>number of channels (stream only)</p></td>
+</tr>
+<tr class="row-even"></tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pytdt.pytdt.Block.read_stores">
@@ -243,7 +278,7 @@ or more blocks.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to PyTDT’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
