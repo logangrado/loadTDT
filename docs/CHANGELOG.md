@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.5.2] - 2019-08-26
+### Changed
+- Improved documentation
+
 ## [0.5.1] - 2019-08-26
 ### Fixed
 - Fixed bug encountered when reading blocknotes

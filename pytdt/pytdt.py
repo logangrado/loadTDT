@@ -144,7 +144,6 @@ class Block(object):
                 blockNotesList.append({})
 
             if ';' in line:
-                print(line)
                 items = line.split(';')
                 fieldstr = items[0].split('=')[1]
                 value = items[2].split('=')[1]
