@@ -15,3 +15,7 @@ A tool for interfacing with and reading TDT blocks in python
 >>> block = pytdt.Block('path/to/block')
 >>> block.read_streams()
 ```
+
+## Documentation
+
+[Read the docs here](https://logangrado.github.io/pytdt/)
