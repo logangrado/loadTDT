@@ -1,5 +1,5 @@
 # pytdt
-![v0.5.2](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=0.5.2&x2=0)
+[![PyPI version](https://badge.fury.io/py/pytdt.svg)](https://badge.fury.io/py/pytdt)
 
 A tool for interfacing with and reading TDT blocks in python
 
