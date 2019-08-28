@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.0] - 2019-08-30
+### Added
+- Added SEV file reader
+
 ## [0.5.2] - 2019-08-26
 ### Changed
 - Improved documentation
