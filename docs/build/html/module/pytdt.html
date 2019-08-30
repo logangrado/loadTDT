@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; pytdt 0.6.0 documentation</title>
+  <title>API Reference &mdash; pytdt 0.6.1 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.6.0
+                0.6.1
               </div>
             
           
@@ -215,11 +215,14 @@
 
 <dl class="method">
 <dt id="pytdt.pytdt.Block.read_stores">
-<code class="sig-name descname">read_stores</code><span class="sig-paren">(</span><em class="sig-param">stores=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pytdt.pytdt.Block.read_stores" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_stores</code><span class="sig-paren">(</span><em class="sig-param">stores=None</em>, <em class="sig-param">reload=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pytdt.pytdt.Block.read_stores" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read specified stores. If no stores are specified, all stores are read</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>stores</strong> (<em>str</em><em>, </em><em>list</em>) – Name or names of stores to be read. If None, all stores are read.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stores</strong> (<em>str</em><em>, </em><em>list</em>) – Name or names of stores to be read. If None, all stores are read.</p></li>
+<li><p><strong>reload</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, forces reload of stores. Else, skips stores already loaded.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
