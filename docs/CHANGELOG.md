@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.1] - 2019-08-30
+### Changed
+- `read_stores()` no longer re-loads stores that have already been read.
+  - New optional argument `reload` can be used to force re-loading
+
 ## [0.6.0] - 2019-08-30
 ### Added
 - Added SEV file reader

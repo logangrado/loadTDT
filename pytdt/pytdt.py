@@ -93,7 +93,7 @@ class Block(object):
 
         self._create_stream_info()
 
-    def read_stores(self, stores=None):
+    def read_stores(self, stores=None, reload=False):
         '''
         Read specified stores. If no stores are specified, all stores are read
 
@@ -101,9 +101,16 @@ class Block(object):
         ----------
         stores : str, list
             Name or names of stores to be read. If None, all stores are read.
+        reload : bool, optional
+            If true, forces reload of stores. Else, skips stores already loaded.
         '''
+        # Get a list of stores to read
         if stores is None:
             stores = list(self.headerStruct['stores'].keys())
+
+        # Determine which stores are already read
+        if not reload:
+            stores = [store for store in stores if store not in self.data.keys()]
             
         # Determine which stores are from SEV
         sev_stores = []
