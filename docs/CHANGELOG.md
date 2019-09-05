@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.2] - 2019-09-05
+### Fixed
+- Fixed error where SEV reader failed to parse store name in edge case
+
 ## [0.6.1] - 2019-08-30
 ### Changed
 - `read_stores()` no longer re-loads stores that have already been read.

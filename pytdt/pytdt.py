@@ -120,7 +120,7 @@ class Block(object):
                 sev_stores.append(store)
             else:
                 tev_stores.append(store)
-        
+
         # Extract TEV and SEV stores
         self._read_sev(sev_stores)
         self._read_tev(tev_stores)
@@ -396,12 +396,11 @@ class Block(object):
         #=====================================
                 
         sev_fnames = [f for f in os.listdir(self.path) if f[-4:] == '.sev']
-
+        
         self._sev_files = [{'fname':f,'path':os.path.join(self.path,f)} for f in sev_fnames]
 
         chan_search = re.compile('_[Cc]h([0-9]*)')
         hour_search = re.compile('-([0-9]*)h')
-        name_search = re.compile('_(.{4})_')
 
         # Compile info on each sev file
         for f_dict in self._sev_files:
@@ -420,11 +419,7 @@ class Block(object):
                 f_dict['hour'] = 0
 
             # Determine event name of stream
-            match_result = name_search.findall(f_dict['fname'])
-            if match_result:
-                f_dict['event_name'] = match_result[-1]
-            else:
-                f_dict['event_name'] = f_dict['name']
+            f_dict['event_name'] = f_dict['fname'].split('_')[-2]
 
             # Determine filesize
             f_dict['data_size'] = os.stat(f_dict['path']).st_size - 40 # not sure what the -40 is for, a header?
